@@ -15,18 +15,23 @@ def train(
         data_cfg,
         img_size=416,
         resume=False,
-        epochs=270,
+        epochs=100,
         batch_size=16,
         accumulate=1,
         multi_scale=False,
         freeze_backbone=False,
         num_workers=4,
+        dataset=None,
         transfer=False  # Transfer learning (train only YOLO layers)
 
 ):
     weights = 'weights' + os.sep
-    latest = weights + 'latest.pt'
-    best = weights + 'best.pt'
+
+    weights_save = 'weights' + os.sep + dataset + os.sep
+    if not os.path.exists(weights_save):
+        os.makedirs(weights_save)
+    latest = weights_save + 'latest.pt'
+    best = weights_save + 'best.pt'
     device = torch_utils.select_device()
 
     if multi_scale:
@@ -197,7 +202,7 @@ def train(
 
             # Save backup every 10 epochs (optional)
             if epoch > 0 and epoch % 10 == 0:
-                torch.save(chkpt, weights + 'backup%g.pt' % epoch)
+                torch.save(chkpt, weights_save + 'backup%g.pt' % epoch)
 
             del chkpt
 
@@ -206,13 +211,14 @@ def train(
             results = test.test(cfg, data_cfg, batch_size=batch_size, img_size=img_size, model=model)
 
         # Write epoch results
-        with open('results.txt', 'a') as file:
+        results_filename = dataset+'_results.txt'
+        with open(results_filename, 'a') as file:
             file.write(s + '%11.3g' * 3 % results + '\n')  # append P, R, mAP
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epochs', type=int, default=270, help='number of epochs')
+    parser.add_argument('--epochs', type=int, default=100, help='number of epochs')
     parser.add_argument('--batch-size', type=int, default=16, help='size of each image batch')
     parser.add_argument('--accumulate', type=int, default=1, help='accumulate gradient x batches before optimizing')
     parser.add_argument('--cfg', type=str, default='cfg/yolov3-spp.cfg', help='cfg file path')
@@ -226,6 +232,7 @@ if __name__ == '__main__':
     parser.add_argument('--rank', default=0, type=int, help='distributed training node rank')
     parser.add_argument('--world-size', default=1, type=int, help='number of nodes for distributed training')
     parser.add_argument('--backend', default='nccl', type=str, help='distributed backend')
+    parser.add_argument('--dataset', default=None, type=str, help='dataset used')
     opt = parser.parse_args()
     print(opt, end='\n\n')
 
@@ -241,5 +248,6 @@ if __name__ == '__main__':
         batch_size=opt.batch_size,
         accumulate=opt.accumulate,
         multi_scale=opt.multi_scale,
-        num_workers=opt.num_workers
+        num_workers=opt.num_workers,
+        dataset=opt.dataset
     )

@@ -3,7 +3,6 @@ import random
 from collections import defaultdict
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
@@ -462,7 +461,8 @@ def coco_only_people(path='../coco/labels/val2014/'):
 def plot_wh_methods():  # from utils.utils import *; plot_wh_methods()
     # Compares the two methods for width-height anchor multiplication
     # https://github.com/ultralytics/yolov3/issues/168
-    x = np.arange(-4.0, 4.0, .1)
+    pass
+    """  x = np.arange(-4.0, 4.0, .1)
     ya = np.exp(x)
     yb = (torch.sigmoid(torch.from_numpy(x)).numpy() * 2)
 
@@ -477,12 +477,13 @@ def plot_wh_methods():  # from utils.utils import *; plot_wh_methods()
     plt.legend()
     fig.tight_layout()
     fig.savefig('comparison.jpg', dpi=fig.dpi)
-
+    """
 
 def plot_results(start=0, stop=0):  # from utils.utils import *; plot_results()
     # Plot training results files 'results*.txt'
     # import os; os.system('wget https://storage.googleapis.com/ultralytics/yolov3/results_v3.txt')
-
+    pass
+    """
     fig = plt.figure(figsize=(14, 7))
     s = ['X + Y', 'Width + Height', 'Confidence', 'Classification', 'Total Loss', 'Precision', 'Recall', 'mAP']
     for f in sorted(glob.glob('results*.txt')):
@@ -496,3 +497,4 @@ def plot_results(start=0, stop=0):  # from utils.utils import *; plot_results()
                 plt.legend()
     fig.tight_layout()
     fig.savefig('results.jpg', dpi=fig.dpi)
+    """

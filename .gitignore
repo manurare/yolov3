@@ -14,11 +14,11 @@
 *.avi
 *.data
 *.json
+*.swp
 
-*.cfg
+
 !cfg/yolov3*.cfg
 
-data/*
 !data/samples/zidane.jpg
 !data/coco.names
 !data/coco_paper.names
@@ -232,3 +232,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+
+coco/
+images/
+
