@@ -13,4 +13,4 @@ sleep 5
 /usr/local/cuda-9.2/samples/bin/x86_64/linux/release/deviceQuery
 nvidia-smi
 cd ~/M5/yolov3
-python3 train.py --cfg cfg/udacity.cfg --data-cfg data/udacity.data --dataset udacity
+python3 train.py --cfg cfg/udacity.cfg --data-cfg data/udacity.data --dataset_name udacity

@@ -21,13 +21,13 @@ def train(
         multi_scale=False,
         freeze_backbone=False,
         num_workers=4,
-        dataset=None,
+        dataset_name=None,
         transfer=False  # Transfer learning (train only YOLO layers)
 
 ):
     weights = 'weights' + os.sep
 
-    weights_save = 'weights' + os.sep + dataset + os.sep
+    weights_save = 'weights' + os.sep + dataset_name + os.sep
     if not os.path.exists(weights_save):
         os.makedirs(weights_save)
     latest = weights_save + 'latest.pt'
@@ -211,7 +211,7 @@ def train(
             results = test.test(cfg, data_cfg, batch_size=batch_size, img_size=img_size, model=model)
 
         # Write epoch results
-        results_filename = dataset+'_results.txt'
+        results_filename = dataset_name+'_results.txt'
         with open(results_filename, 'a') as file:
             file.write(s + '%11.3g' * 3 % results + '\n')  # append P, R, mAP
 
@@ -232,7 +232,7 @@ if __name__ == '__main__':
     parser.add_argument('--rank', default=0, type=int, help='distributed training node rank')
     parser.add_argument('--world-size', default=1, type=int, help='number of nodes for distributed training')
     parser.add_argument('--backend', default='nccl', type=str, help='distributed backend')
-    parser.add_argument('--dataset', default=None, type=str, help='dataset used')
+    parser.add_argument('--dataset_name', default=None, type=str, help='dataset used')
     opt = parser.parse_args()
     print(opt, end='\n\n')
 
@@ -249,5 +249,5 @@ if __name__ == '__main__':
         accumulate=opt.accumulate,
         multi_scale=opt.multi_scale,
         num_workers=opt.num_workers,
-        dataset=opt.dataset
+        dataset_name=opt.dataset_name
     )

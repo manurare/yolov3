@@ -13,4 +13,4 @@ sleep 5
 /usr/local/cuda-9.2/samples/bin/x86_64/linux/release/deviceQuery
 nvidia-smi
 cd ~/M5/yolov3
-python3 train.py --cfg cfg/tt100k.cfg --data-cfg data/tt100k.data --dataset tt100k
+python3 train.py --cfg cfg/tt100k.cfg --data-cfg data/tt100k.data --dataset_name tt100k
