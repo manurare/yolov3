@@ -14,9 +14,10 @@ def detect(
         images,
         output='output',  # output folder
         img_size=416,
-        conf_thres=0.5,
-        nms_thres=0.5,
-        save_txt=False,
+        # TODO: SET THERES TO .5
+        conf_thres=0.1, #TO DO
+        nms_thres=0.1,
+        save_txt=True,
         save_images=True,
         webcam=False
 ):

@@ -22,8 +22,8 @@ def train(
         freeze_backbone=False,
         num_workers=4,
         dataset_name=None,
-        transfer=False  # Transfer learning (train only YOLO layers)
-
+        transfer=False,  # Transfer learning (train only YOLO layers)
+        data_augmentation=False
 ):
     weights = 'weights' + os.sep
 
@@ -84,7 +84,7 @@ def train(
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[250], gamma=0.1, last_epoch=start_epoch - 1)
 
     # Dataset
-    dataset = LoadImagesAndLabels(train_path, img_size=img_size, augment=True)
+    dataset = LoadImagesAndLabels(train_path, img_size=img_size, augment=data_augmentation)
 
     # Initialize distributed training
     if torch.cuda.device_count() > 1:
@@ -208,7 +208,7 @@ def train(
 
         # Calculate mAP
         with torch.no_grad():
-            results = test.test(cfg, data_cfg, batch_size=batch_size, img_size=img_size, model=model)
+            results = test.test(cfg, data_cfg, batch_size=batch_size, img_size=img_size, model=model, just_predict=False)
 
         # Write epoch results
         results_filename = dataset_name+'_results.txt'
@@ -233,6 +233,7 @@ if __name__ == '__main__':
     parser.add_argument('--world-size', default=1, type=int, help='number of nodes for distributed training')
     parser.add_argument('--backend', default='nccl', type=str, help='distributed backend')
     parser.add_argument('--dataset_name', default=None, type=str, help='dataset used')
+    parser.add_argument("--data_augmentation", default=False, type=bool, help='me la suda')
     opt = parser.parse_args()
     print(opt, end='\n\n')
 
@@ -249,5 +250,6 @@ if __name__ == '__main__':
         accumulate=opt.accumulate,
         multi_scale=opt.multi_scale,
         num_workers=opt.num_workers,
-        dataset_name=opt.dataset_name
+        dataset_name=opt.dataset_name,
+        data_augmentation=opt.data_augmentation
     )

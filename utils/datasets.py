@@ -137,8 +137,9 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         self.img_size = img_size
         self.augment = augment
         if "coco" in path:
-            self.label_files = [x.replace('images', 'labels').replace('.bmp', '.txt').replace('.jpg', '.txt').replace('.png', '.txt')
-                            for x in self.img_files]
+            self.label_files = [
+                x.replace('images', 'labels').replace('.bmp', '.txt').replace('.jpg', '.txt').replace('.png', '.txt')
+                for x in self.img_files]
         else:
             self.label_files = [
                 x.replace('.bmp', '.txt').replace('.jpg', '.txt').replace('.png', '.txt')

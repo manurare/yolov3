@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from models import *
 from utils.datasets import *
 from utils.utils import *
+import os
 
 
 def test(
@@ -18,7 +19,9 @@ def test(
         conf_thres=0.1,
         nms_thres=0.5,
         save_json=False,
-        model=None
+        model=None,
+        dataset_name=None,
+        just_predict = True
 ):
     if model is None:
         device = torch_utils.select_device()
@@ -134,25 +137,41 @@ def test(
         for c, a in zip(AP_class, AP):
             print('%15s: %-.4f' % (names[c], a))
 
+    # Save Metrics
+    if just_predict:
+        metrics_directory = 'metrics'+os.sep
+        if not os.path.exists(metrics_directory):
+            os.makedirs(metrics_directory)
+        metrics_filename = metrics_directory + dataset_name + '_metrics.txt'
+        with open(metrics_filename, 'a') as file:
+            file.write('%11.3g' * 3 % (mP, mR, mAP) + '\n')  # append P, R, mAP
+
     # Save JSON
     if save_json and mAP and len(jdict):
+        pred_directory = 'predictions' + os.sep
+        if not os.path.exists(pred_directory):
+            os.makedirs(pred_directory)
         imgIds = [int(Path(x).stem.split('_')[-1]) for x in dataset.img_files]
-        with open('results.json', 'w') as file:
-            json.dump(jdict, file)
+        if dataset_name is not None:
+            with open(pred_directory + dataset_name+'_predictions.json', 'w') as file:
+                json.dump(jdict, file)
+        else:
+            with open(pred_directory + '_predictions.json', 'w') as file:
+                json.dump(jdict, file)
 
-        from pycocotools.coco import COCO
-        from pycocotools.cocoeval import COCOeval
-
-        # https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocoEvalDemo.ipynb
-        cocoGt = COCO('../coco/annotations/instances_val2014.json')  # initialize COCO ground truth api
-        cocoDt = cocoGt.loadRes('results.json')  # initialize COCO pred api
-
-        cocoEval = COCOeval(cocoGt, cocoDt, 'bbox')
-        cocoEval.params.imgIds = imgIds  # [:32]  # only evaluate these images
-        cocoEval.evaluate()
-        cocoEval.accumulate()
-        cocoEval.summarize()
-        mAP = cocoEval.stats[1]  # update mAP to pycocotools mAP
+        # from pycocotools.coco import COCO
+        # from pycocotools.cocoeval import COCOeval
+        #
+        # # https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocoEvalDemo.ipynb
+        # cocoGt = COCO('../coco/annotations/instances_val2014.json')  # initialize COCO ground truth api
+        # cocoDt = cocoGt.loadRes('results.json')  # initialize COCO pred api
+        #
+        # cocoEval = COCOeval(cocoGt, cocoDt, 'bbox')
+        # cocoEval.params.imgIds = imgIds  # [:32]  # only evaluate these images
+        # cocoEval.evaluate()
+        # cocoEval.accumulate()
+        # cocoEval.summarize()
+        # mAP = cocoEval.stats[1]  # update mAP to pycocotools mAP
 
     # F1 score = harmonic mean of precision and recall
     # F1 = 2 * (mP * mR) / (mP + mR)
@@ -163,7 +182,7 @@ def test(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='test.py')
-    parser.add_argument('--batch-size', type=int, default=32, help='size of each image batch')
+    parser.add_argument('--batch-size', type=int, default=16, help='size of each image batch')
     parser.add_argument('--cfg', type=str, default='cfg/yolov3-spp.cfg', help='cfg file path')
     parser.add_argument('--data-cfg', type=str, default='data/coco.data', help='coco.data file path')
     parser.add_argument('--weights', type=str, default='weights/yolov3-spp.weights', help='path to weights file')
@@ -172,6 +191,8 @@ if __name__ == '__main__':
     parser.add_argument('--nms-thres', type=float, default=0.5, help='iou threshold for non-maximum suppression')
     parser.add_argument('--save-json', action='store_true', help='save a cocoapi-compatible JSON results file')
     parser.add_argument('--img-size', type=int, default=416, help='size of each image dimension')
+    parser.add_argument('--dataset_name', type=str, default=None, help='dataset used')
+    parser.add_argument('--just_predict', type=bool, default=True, help='dataset used')
     opt = parser.parse_args()
     print(opt, end='\n\n')
 
@@ -185,5 +206,7 @@ if __name__ == '__main__':
             opt.iou_thres,
             opt.conf_thres,
             opt.nms_thres,
-            opt.save_json
+            opt.save_json,
+            dataset_name=opt.dataset_name,
+            just_predict = opt.just_predict
         )
