@@ -1,6 +1,6 @@
 classes=80
-train=../coco/trainvalno5k.txt
-valid=../coco/5k.txt
+train=/home/grupo07/M5/yolov3/coco/trainvalno5k.txt
+valid=/home/grupo07/M5/yolov3/coco/5k.txt
 names=data/coco.names
 backup=backup/
 eval=coco

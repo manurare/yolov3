@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name tt100k_train_no_data
+#SBATCH --job-name coco_pred_valid
 #SBATCH -n 4 # Number of cores
 #SBATCH -N 1 # Ensure that all cores are on one machine
 #SBATCH -D /home/grupo07/M5/yolov3 # working directory
@@ -13,4 +13,4 @@ sleep 5
 /usr/local/cuda-9.2/samples/bin/x86_64/linux/release/deviceQuery
 nvidia-smi
 cd ~/M5/yolov3
-python3 train.py --cfg cfg/tt100k.cfg --data-cfg data/tt100k_data/tt100k.data --dataset_name tt100k_no_data --resume
+python3 test.py --cfg cfg/yolov3.cfg --data-cfg data/coco.data --weights weights/yolov3.weights --dataset_name coco_predict_valid

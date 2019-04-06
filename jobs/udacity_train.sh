@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name udacity_train
+#SBATCH --job-name udacity_train_no_data
 #SBATCH -n 4 # Number of cores
 #SBATCH -N 1 # Ensure that all cores are on one machine
 #SBATCH -D /home/grupo07/M5/yolov3 # working directory
@@ -13,4 +13,4 @@ sleep 5
 /usr/local/cuda-9.2/samples/bin/x86_64/linux/release/deviceQuery
 nvidia-smi
 cd ~/M5/yolov3
-python3 train.py --cfg cfg/udacity.cfg --data-cfg data/udacity.data --dataset_name udacity
+python3 train.py --cfg cfg/udacity.cfg --data-cfg data/udacity_data/udacity.data --dataset_name udacity_no_data
